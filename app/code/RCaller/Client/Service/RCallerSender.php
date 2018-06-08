@@ -1,13 +1,11 @@
 <?php
 
-namespace Devchannel\HelloWorld\Service;
+namespace RCaller\Client\Service;
 
 
 use Magento\Framework\App\ObjectManager;
-use Magento\Framework\App\ProductMetadata;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Variable\Model\Variable;
 use PHPUnit\Framework\Exception;
 
@@ -32,8 +30,14 @@ class RCallerSender
                 'customerAddress' => $this->getShippingOrBillingAddress($order),
                 'customerPhone' => $this->getPhoneFromBillingOrShippingAddress($order),
                 'customerName' => $this->getCustomerName($order),
-                'priceCurrency' => $order->getOrderCurrencyCode());
-            $this->sendOrderToRCallerInternal($data);
+                'priceCurrency' => $order->getOrderCurrencyCode(),
+                'channel' => "MAGENTO");
+            $variable = ObjectManager::getInstance()->get(Variable::class);
+
+            $username = $variable->loadByCode('rcaller_username')->getValue('plain');
+            $password = $variable->loadByCode('rcaller_password')->getValue('plain');
+
+            $this->sendOrderToRCallerInternal($data, $username, $password);
         } catch (Exception $e) {
             error_log($e->getMessage());
         }
@@ -44,29 +48,28 @@ class RCallerSender
 
     /**
      * @param $data
-     * @return void
+     * @param $username
+     * @param $password
+     * @return int
      */
-    public function sendOrderToRCallerInternal($data)
+    public function sendOrderToRCallerInternal($data, $username, $password)
     {
         $rcallerConfig = parse_ini_file("rcaller-config.ini");
         $curl = curl_init($rcallerConfig["rcaller.url"]);
 
-        $variable = ObjectManager::getInstance()->get(Variable::class);
-
-        $username = $variable->loadByCode('rcaller_username')->getValue('plain');
-        $password = $variable->loadByCode('rcaller_password')->getValue('plain');
-
-        $data["userEmail"] = $username;
-        $magentoVersion = ObjectManager::getInstance()->get('Magento\Framework\App\ProductMetadataInterface')->getVersion();
-        $data["channel"] = ProductMetadata::PRODUCT_NAME . " " . $magentoVersion . " - " . ProductMetadata::EDITION_NAME;
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
 
         curl_setopt($curl, CURLOPT_USERPWD, $username . ":" . $password);
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, $rcallerConfig["rcaller.connectionTimeOut"]);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_exec($curl);
+        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
+
+        return $httpCode;
     }
 
     /**

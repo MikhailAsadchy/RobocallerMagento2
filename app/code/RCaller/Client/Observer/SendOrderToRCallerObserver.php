@@ -1,9 +1,9 @@
 <?php
 
-namespace Devchannel\HelloWorld\Observer;
+namespace RCaller\Client\Observer;
 
 
-use Devchannel\HelloWorld\Service\RCallerSender;
+use RCaller\Client\Service\RCallerSender;
 use Magento\Framework\Event;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
