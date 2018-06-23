@@ -10,6 +10,9 @@ class MagentoAdaptedIOC
      */
     private static $ioc;
 
+    /**
+     * @return RCallerDependencyContainer
+     */
     public static function getIOC()
     {
         if (self::$ioc == null) {

@@ -270,15 +270,18 @@ class RCallerClient
      */
     private function validateExternalIdField($data, $validationResult)
     {
-        $externalId = $data["externalId"];
-        $isEmpty = empty($externalId);
-        if (!$isEmpty) {
-            $length = strlen($externalId);
-            if ($length > 255) {
-                $validationResult->addError("externalId", "externalId field length should be 1-255");
+        if (array_key_exists("externalOrderId", $data)) {
+            $externalId = $data["externalOrderId"];
+            if ($externalId != null) {
+                $isEmpty = empty($externalId);
+                if (!$isEmpty) {
+                    $length = strlen($externalId);
+                    if ($length > 255) {
+                        $validationResult->addError("externalOrderId", "externalOrderId field length should be 1-255");
+                    }
+                }
             }
         }
-
     }
 }
 

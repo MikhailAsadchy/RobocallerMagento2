@@ -15,6 +15,7 @@ class RCallerAdapterImport
         array_push($files, $currentFileLocation . "/MagentoLogger.php");
         array_push($files, $currentFileLocation . "/MagentoOptionRepository.php");
         array_push($files, $currentFileLocation . "/MagentoOrderEntryFieldResolver.php");
+        array_push($files, $currentFileLocation . "/MagentoAdaptedIOC.php");
 
         StrictImporter::importFiles($files);
     }

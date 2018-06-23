@@ -7,6 +7,6 @@ class MagentoChannelNameProvider implements ChannelNameProvider
 {
     public function getChannelName()
     {
-        return "Magento2";
+        return "MAGENTO";
     }
 }

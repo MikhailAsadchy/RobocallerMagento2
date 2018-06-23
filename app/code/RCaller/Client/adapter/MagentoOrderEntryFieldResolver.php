@@ -7,16 +7,16 @@ class MagentoOrderEntryFieldResolver implements OrderEntryFieldResolver
 {
     public function getName($item)
     {
-        // TODO: Implement getName() method.
+        return $item->getName();
     }
 
     public function getQuantity($item)
     {
-        // TODO: Implement getQuantity() method.
+        return $item->getQtyOrdered();
     }
 
     public function getUnit($item)
     {
-        // TODO: Implement getUnit() method.
+        return "шт.";
     }
 }
